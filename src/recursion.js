@@ -7,26 +7,111 @@
 // Example: 5! = 5 x 4 x 3 x 2 x 1 = 120
 // factorial(5); // 120
 var factorial = function(n) {
+  //If n is 1 this is the base case
+  if(n < 0) {
+    return null;
+  }
+
+  if(n === 0) {
+    return 1;
+  }
+
+  if (n === 1) {
+    return n;
+  }
+
+  return n * factorial(n-1);
+  //the factorial of any number is that number times the factorial of (that number minus 1)
+  // n! = n * (n-1)
 };
 
 // 2. Compute the sum of an array of integers.
 // sum([1,2,3,4,5,6]); // 21
 var sum = function(array) {
+
+  if (array.length === 0) {
+    return 0;
+  }
+  var car = array[0];
+  var cdr = array.slice(1);
+
+  return car + sum(cdr);
 };
 
 // 3. Sum all numbers in an array containing nested arrays.
 // arraySum([1,[2,3],[[4]],5]); // 15
 var arraySum = function(array) {
+  if (array.length === 0) {
+    return 0;
+  }
+
+  var result = 0;
+
+  if (!Array.isArray(array)) {
+    return result += array;
+  }
+
+  for (var i = 0; i < array.length; i++){
+    result += arraySum(array[i]);
+  }
+
+  return result;
 };
+
+// var arraySum = function(arrayOrNum) {
+//   if (!Array.isArray(arrayOrNum)) {
+//     return arrayOrNum;
+//   }
+//   var array = arrayOrNum;
+
+//   if (array.length === 0) {
+//     return 0;
+//   }
+
+//   // This is where we step down into a nested array
+//   var car = arraySum(array[0]);
+//   if (array.length === 1) {
+//     return car;
+//   }
+//   var cdr = array.slice(1);
+
+//   // This is where we traverse sideways within the current array
+//   return car + arraySum(cdr);
+// };
 
 // 4. Check if a number is even.
 var isEven = function(n) {
+  if (n < 0) {
+    n = Math.abs(n);
+  }
+  if (n === 0) {
+    return true;
+  }
+
+  return !isEven(n-1);
 };
 
 // 5. Sum all integers below a given integer.
 // sumBelow(10); // 45
 // sumBelow(7); // 21
 var sumBelow = function(n) {
+  if (n === 0) {
+    return 0;
+  }
+
+  var isNegative = n < 0;
+  if (isNegative) {
+    n = Math.abs(n);
+    return sumBelow(n) * -1;
+  }
+
+  var result = n-1;
+
+  if (n === 1) {
+    return result;
+  }
+  return result + sumBelow(n-1);
+
 };
 
 // 6. Get the integers within a range (x, y).

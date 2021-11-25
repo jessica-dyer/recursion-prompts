@@ -117,6 +117,21 @@ var sumBelow = function(n) {
 // 6. Get the integers within a range (x, y).
 // range(2,9); // [3,4,5,6,7,8]
 var range = function(x, y) {
+  if (y - x === 0 || Math.abs(y - x) === 1) {
+    return [];
+  } else if (y - x === 2) {
+    return [x + 1];
+  }
+  var xLarger = x > y;
+  if (xLarger) {
+    var numbers = range(x, y+1);
+    numbers.push(y + 1);
+    return numbers;
+  } else {
+    var numbers = range(x, y-1);
+    numbers.push(y - 1);
+    return numbers;
+  }
 };
 
 // 7. Compute the exponent of a number.
@@ -125,6 +140,26 @@ var range = function(x, y) {
 // exponent(4,3); // 64
 // https://www.khanacademy.org/computing/computer-science/algorithms/recursive-algorithms/a/computing-powers-of-a-number
 var exponent = function(base, exp) {
+  var isNegativeExp = exp<0;
+
+  if (exp >=0) {
+    if (exp === 0) {
+      return 1;
+    }
+    if (exp === 1) {
+      return base;
+    } else {
+      return base * exponent(base, exp-1);
+    }
+  }
+
+  if(isNegativeExp) {
+    if (exp == -1) {
+      return 1/base;
+    } else {
+      return 1/(base * exponent(base, (-1)*(exp+1)));
+    }
+  }
 };
 
 // 8. Determine if a number is a power of two.
@@ -132,14 +167,39 @@ var exponent = function(base, exp) {
 // powerOfTwo(16); // true
 // powerOfTwo(10); // false
 var powerOfTwo = function(n) {
+  if (n === 1){
+    return true;
+  }
+  if (n <1 && n>=0) {
+    return false;
+  }
+  return powerOfTwo(n/2);
 };
 
 // 9. Write a function that reverses a string.
 var reverse = function(string) {
+  if (string === "") {
+    return "";
+  } else {
+    return reverse(string.substr(1)) + string.charAt(0);
+  }
 };
 
 // 10. Write a function that determines if a string is a palindrome.
-var palindrome = function(string) {
+var palindrome = function(str) {
+  str = str.toLowerCase();
+  if(str.length === 1) {
+    return true;
+  }
+  if (str.length < 2) {
+    return true;
+  }
+
+  if (str[0] == str.slice(-1)) {
+    return palindrome(str.slice(1,-1));
+  }
+
+  return false;
 };
 
 // 11. Write a function that returns the remainder of x divided by y without using the
@@ -153,6 +213,25 @@ var modulo = function(x, y) {
 // 12. Write a function that multiplies two numbers without using the * operator or
 // Math methods.
 var multiply = function(x, y) {
+  var yNegative = y < 0;
+  var bothNegative = x < 0 && y < 0;
+
+  if(x === 0 || y === 0){
+    return 0;
+  }
+
+  if(y === 1 || y === -1) {
+    return x;
+  }
+  if (bothNegative) {
+    return -x + multiply(-x, -y - 1);
+  }
+
+  if (yNegative) {
+    return (-multiply(x, -y));
+  } else {
+    return x + multiply(x, y - 1);
+  }
 };
 
 // 13. Write a function that divides two numbers without using the / operator or
@@ -214,6 +293,20 @@ var rMap = function(array, callback) {
 // countKeysInObj(obj, 'r') // 1
 // countKeysInObj(obj, 'e') // 2
 var countKeysInObj = function(obj, key) {
+  var counter = 0;
+
+  for (var currentKey in obj) {
+    var currentValue = obj[currentKey];
+    if(typeof(currentValue) === 'object') {
+      var keysInSubObject = countKeysInObj(currentValue, key);
+      counter = counter + keysInSubObject;
+    }
+
+    if (currentKey === key) {
+      counter ++;
+    }
+  }
+  return counter;
 };
 
 // 23. Write a function that counts the number of times a value occurs in an object.
@@ -221,11 +314,36 @@ var countKeysInObj = function(obj, key) {
 // countValuesInObj(obj, 'r') // 2
 // countValuesInObj(obj, 'e') // 1
 var countValuesInObj = function(obj, value) {
+  var counter = 0;
+
+  for(var key in obj){
+    var currentValue = obj[key];
+    if(typeof(currentValue) === 'object') {
+      var valuesInSubObject = countValuesInObj(currentValue, value);
+      counter = counter + valuesInSubObject;
+    }
+    if(currentValue === value) {
+      counter++;
+    }
+  }
+  return counter;
 };
+
 
 // 24. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
 var replaceKeysInObj = function(obj, oldKey, newKey) {
+  for(var key in obj) {
+    var currentValue = obj[key];
+    if(typeof(currentValue) === 'object') {
+      var newObject = replaceKeysInObj(currentValue, oldKey, newKey);
+    }
+    if(key === oldKey) {
+      obj[newKey] = obj[oldKey];
+      delete obj[oldKey];
+    }
+  }
+  return obj;
 };
 
 // 25. Get the first n Fibonacci numbers. In the Fibonacci sequence, each subsequent
@@ -234,6 +352,7 @@ var replaceKeysInObj = function(obj, oldKey, newKey) {
 // fibonacci(5); // [0,1,1,2,3,5]
 // Note: The 0 is not counted.
 var fibonacci = function(n) {
+
 };
 
 // 26. Return the Fibonacci number located at index n of the Fibonacci sequence.
@@ -242,6 +361,16 @@ var fibonacci = function(n) {
 // nthFibo(7); // 13
 // nthFibo(3); // 2
 var nthFibo = function(n) {
+  if (n === 0){
+    return 0;
+  }
+  if (n === 1) {
+    return 1;
+  }
+
+  var previousFibo = nthFibo(n-1)
+  var previousPreviousFibo = nthFibo(n-2)
+  return previousFibo + previousPreviousFibo
 };
 
 // 27. Given an array of words, return a new array containing each word capitalized.
